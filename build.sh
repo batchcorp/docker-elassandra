@@ -190,7 +190,7 @@ get_release() {
   local name=$1
   local base_url
 
-  local url=https://github.com/$REPO_NAME/releases/download/v${name}/elassandra-${name}.deb
+  local url=https://github.com/$REPO_NAME/releases/download/v${name}/elassandra_${name}_all.deb
 
   wget_package $url
 }

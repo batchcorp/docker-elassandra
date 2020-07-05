@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Batch modification
+/etc/init.d/ssh start
+
 # Set memlock limit to unlimited (before set -e)
 ulimit -l unlimited 2&>/dev/null
 

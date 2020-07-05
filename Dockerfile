@@ -233,5 +233,23 @@ ENV CASSANDRA_DAEMON org.apache.cassandra.service.ElassandraDaemon
 # 9160: thrift service
 # 9200: elassandra HTTP
 # 9300: elasticsearch transport
-EXPOSE 7000 7001 7199 9042 9142 9160 9200 9300
+
+### Batch Modifications
+
+RUN apt-get update && apt-get install -y openssh-server
+RUN mkdir /var/run/sshd
+RUN sed -i 's/\#PermitRootLogin prohibit-password/PermitRootLogin without-password/' /etc/ssh/sshd_config
+RUN sed -i 's/\#Port 22/Port 22022/' /etc/ssh/sshd_config
+
+# SSH login fix. Otherwise user is kicked off after login
+RUN sed 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' -i /etc/pam.d/sshd
+
+# Add ssh key
+RUN mkdir /root/.ssh
+RUN echo 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC3ZZs51WCbel1rnwAuNea5lleLw3yBusljDXamf2wLNSOoBuZxPM9VPYwWIBIsQrrxMCO8Ckt7ClApC6gYz3XwQ8GEDNNhdI4n0jJY+D7jh8SkBBZCw6vA+2sCs/OVzyoBYnT0Ju6bVwXtv7XCbLQIy6XbcAcQaWLPhdZpuHRXN8y5wPPSa7rlJMhHI5ZtBlGanzTEwvVtTESnmXQbdOyxADF/v2qlPJ6Wk6WGcnIxpNKk+R3GcadivxuFJDIwM27Z0oUI3jrBKCHPjdI/veOL0w05KXXzK08OhaONCUppMcfqRvdfXE7ANxUDE9k1IscroG4kmOqQq8K2R15pt6QH fritzstauffacher@Fritzs-MacBook-Pro.loca' > /root/.ssh/authorized_keys
+ENV NOTVISIBLE "in users profile"
+RUN echo "export VISIBLE=now" >> /etc/profile
+RUN /usr/bin/ssh-keygen -A
+
+EXPOSE 7000 7001 7199 9042 9142 9160 9200 9300 22022
 CMD ["cassandra", "-f"]
